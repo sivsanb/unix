@@ -1,0 +1,99 @@
+Search for text in all the directories and file 
+ $grep -rnw . -e 'text'
+
+Sending mail throug mailx command
+ $echo "Hi Test " | mailx -s "Subject" emailid (to debug use $set -x | echo "Hi Test " | mailx -s "Subject" emailid | set -x )
+
+Looping through files and copying to another location using for
+ $for i in $(find ./ -name 'file*');do cp $i ./archive/ready-to-send;done
+
+finding all files in subdirectories
+ $find /home/dira -type f -not -name "*.swp"
+ or
+ $for file in 'find /home/dira -type f -not -name "*.swp"';do echo $file;done
+
+
+Uncompress all the files in a directory
+ $for i in $(ls);do uncompress $i;done
+
+substring a file name or extract file name
+ $for i in $(ls);do echo "${i:startpos:endpos}";done
+
+rename all the files using for
+ $for i in $(ls);do mv $i ${i:startpos:endpos};done
+
+Count number of blank lines in a file
+ $grep -cvP '\S' file.txt 
+   #( -P '\S' (Perl Regex) will match any line contains non-space
+      -v select non matching lines 
+      -c print a count of matching lines
+      Source:https://stackoverflow.com/questions/13506109/count-number-of-blank-lines-in-a-file)
+
+Print specific line numbers 950 to 952 
+  $sed -n '950,952p:953q' filen.txt 
+     #(-n indicates line numbers , q stop immediately at)
+
+To add line numbers to bash -x output:
+ PS4='$LINENO:' bash -x  script
+For complex cases where scripts call one another, it can be handy to know not just the line number but also the file name:
+ PS4='$BASH_SOURCE:$LINENO:' bash -x  script
+PS4 can be further customized as you please. For example:
+ PS4='File=$BASH_SOURCE: LineNo=$LINENO: ' bash -x  script
+Filtering the output If we know what error message we are looking for, we can filter the output to get just that message and its corresponding file name and line number:
+ $ PS4='File=$BASH_SOURCE: LineNo=$LINENO: ' bash -x  script 2>&1 | grep -B1 'awk: fatal:'
+  File=script: LineNo=3: awk 1 text.txt
+ awk: fatal: cannot open file `text.txt' for reading (No such file or directory)
+ Source:https://stackoverflow.com/questions/38235017/getting-the-line-number-of-a-shell-script-error
+ 
+ Linux Script to create folders in Edge Node and HDFS
+  #!/bin/ksh
+  set -x
+  VARIABLE=$1
+  #creation in Edge Node
+  mkdir -p /home/user/dira/${VARIABLE}
+  mkdir -p /home/user/dira/${VARIABLE}/bin
+  #creation in HDFS
+  hadoop fs -mkdir -p /home/user/dira/${VARIABLE}
+  hadoop fs -mkdir -p /home/user/dira/${VARIABLE}/bin
+  echo "Script Completed Sucessfully for ${VARIABLE} "
+  
+ Changing the timestamp of the file
+  $file=/home/dira/file.txt ;mtime=$(stat -c %y "$file");echo $mtime
+  $file=/home/dira/file.txt ;mtime=$(stat -c %y "$file");echo $mtime;vi "$file";touch -d "$mtime" "$file"
+  $file=/home/dira/file.txt ;mtime=$(stat -c %y "$file");echo $mtime
+ 
+ Command to write trailer to existing file
+  $sed -i '$ a\99TRLABC' file.txt
+  
+ Command to write header to existing file
+  $sed -i '1iHEADERABC' file.txt
+ 
+ Get all files created on particular date
+  $ls -ltr *.txt |grep -E 'Nov 11'|awk {'print $9'}
+  
+ Remove files created on particular date
+  $rm `ls -ltr *.txt|grep -E 'Nov 11'|awk {'print $9'}`
+  
+ Delete 2nd line in file.txt using sed
+  $sed '2d' file.txt > newfile.txt
+  or $sed -i '2d' file.txt
+ 
+ Find directories in root
+  $find / -name temp -type d
+ 
+ Grep command to check if line in file.txt not starts with numbers
+  $grep -i '^![0-9]' file.txt
+  
+ MFT Command
+  $user/cfsend n:host lf:/file.txt rf:/file.txt |tee ${log_dir}/${log_file}
+ 
+ Date command
+ $date '+%Y%m%d%H:%M:%S' ==> out 2017010121:03:03
+ 
+ Copying files from one unix server to another using scp
+  $scp file.txt username@host:/home/dira1
+  
+ Executing command on remote server using unix
+  $ssh username@host "cp file.txt /home/username/1.txt"
+  
+  
