@@ -96,4 +96,28 @@ Filtering the output If we know what error message we are looking for, we can fi
  Executing command on remote server using unix
   $ssh username@host "cp file.txt /home/username/1.txt"
   
+ Executing the Script using nohup
+  $logfile="$logdir/sqoop-metastore-$user-$host.log"
+  $touch $logfile > /dev/null 2 >&1
+  $nohup "$bin/sqoop" metastore > "$logfile" 2 >&1 </dev/null &
+  or $nohup sh script.sh >> nohup_output.log &
+ 
+ Executing Oracle Query from Unix script
+ $vi script.sh
+ LOG_DIR=dir
+ for table_name in `cat table_list.txt ` ;do
+ table_data=`sqlplus -s /nolog <<EOF
+ whenever sqlerror exit 1;
+ conn user_name/psw@host:1521/SID
+ set  serveroutput on;
+ spool ${LOG_DIR}/$table_name.txt
+ set lines 500 pages 0 head off feedback off echo off
+ describe schema.${table_name}
+ exit 0
+ EOF `
+
+
+
+
+  
   
