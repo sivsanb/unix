@@ -1,0 +1,14 @@
+#!/bin/bash
+lines=`cat filename | head -10`
+IFS=$'\n'
+for i in $lines
+do 
+tbNM=$(echo $i | awk '{print $1}')
+colNM=$(echo $i | awk '{print $2}')
+echo tbNM,$colNM
+done
+
+#reads each line in a file and process field by field and print two columns with comma seperated
+
+#to extract particular column based on criteria from a line
+#awk '{if ($2 == "SOMETHING") {print $2}}' file.lst | head -2
