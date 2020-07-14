@@ -1,0 +1,49 @@
+get_hive_stats.sh
+#!/bin/ksh
+Today=`date + '%Y%m%d'`
+rm fl1.csv
+rm report.html
+hive -S -e "with tbla as (select cola1,colb1 from tblb) select * from tbla;" >fl1.csv
+echo "Completed Hive Extraction"
+totPass=`awk -F ',''{sum+=$2} END {print sum}' fl1.csv`
+
+sed -i 's/\t/,/g' fl1.csv
+
+awk 'BEGIN{
+FS=","
+print("<HTML>""<BODY>""<TABLE  border="1"><caption>heading 1</caption><TH>col1_header1</TH><TH>col2_header>=</TH>"}
+{
+printf"<TR>"
+for(i=1;i<=NF;i++)
+printf"<YD>%s</TD>",$i
+print "</TR>
+}
+END {
+print "</TABLE><BODY></HTML>"
+}' fl1.csv > report.html
+
+
+#sending email
+{
+echo "Hi"
+echo "PFA"
+
+} | mailx -s "subject" -a report.html to_mailid1,to_mailid2
+
+#sending email in Body in html format having in line tables in email
+#} | mailx -s "$(echo -e "subject" \n content-Type: text/html")" -a report.html to_mailid1,to_mailid2
+
+#totPass=`awk -F ',' '{if ( $4 == "NULL" ) count+=1 } END {print count}' fl1.csv `
+#echo "<HTML><BODY>" > report.html
+#echo "<h2>heading1</h2> >> report.html
+#FS=","
+#print "<TABLE border="1"><TH>heading1</TH><TH>heading2</TH>"}
+#{
+#printf "<TR>"
+#for(i=1;i<=NF;i++)
+#printf"<YD>%s</TD>",$i
+#print "</TR>
+#}
+#END {
+#print "</TABLE><BODY></HTML>"
+#}' fl1.csv >> report.html
