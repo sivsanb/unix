@@ -133,7 +133,8 @@ scp -v -r file user@host:locaton_to_copy
 find . -type d -exec mkdir -p /loc/{} \;
 
 
-
+--copy using proxy and jumpers
+$scp -oProxycommand="ssh -W %h:%p -p 2222 user@jumper_host.com" file_nm user@copy_location_host:/file
 
   
   
