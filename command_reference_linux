@@ -117,6 +117,22 @@ Filtering the output If we know what error message we are looking for, we can fi
  EOF `
 
 
+--to pull logs using curl 
+$curl -k -o /localtion_to_copy/file.log sftp://user:psw@host:/home/file.log
+
+--compress files using tar
+$tar -zcvf <file><directory> /location_to_place_compress_file
+--uncompress 
+$tar -zxvf file.tar.gz
+
+--copy files using scp
+scp -v -r user@host:/location/file /target_location (--run from target location to copy from different server)
+scp -v -r file user@host:locaton_to_copy 
+
+--create directories based on current directory structre to different location
+find . -type d -exec mkdir -p /loc/{} \;
+
+
 
 
   
