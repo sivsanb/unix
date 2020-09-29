@@ -136,5 +136,17 @@ find . -type d -exec mkdir -p /loc/{} \;
 --copy using proxy and jumpers
 $scp -oProxycommand="ssh -W %h:%p -p 2222 user@jumper_host.com" file_nm user@copy_location_host:/file
 
+--working with UNIX DATES 
+cur_date=$(date "+%Y/%m/%d") #2005/05/31
+prev_date=$(date -d "$cur_date -1 day" "+%Y/%m/%d 00:00:00") # 2005/05/30 00:00:00
+next_date=$(date -d $cur_date "+%Y/%m/%d 00:00:00") # 2005/05/31 00:00:00
+--convert to epoch time in millis
+startTIME=$(date -d "${prev_date}" +"%s%3N") #1117425600000
+endTIME=$(date -d "${next_date}" +"%s%3N")   #1117512000000  check https://www.epochconverter.com for converting back to original
+--Convert to epoch time in seconds
+date -d "$cur_date" "+%s"  #1117425600 
+date -d @1117425600        #Mon May 30 00:00:00 EDT 2005
+
+
   
   
