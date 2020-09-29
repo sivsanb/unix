@@ -1,0 +1,94 @@
+#!/bin/ksh
+startTime=$1  #time in epoch millis
+endTime=$2    #time in epoch millis
+interval=600000 #extract for every 10 mins
+extractTSGE=`echo $startTime`
+extractTSLE=0;
+Extract_summary_fl="elk_log_"${startTime}"_"${endTime}".log";
+
+while [ ${extractTSGE -lt $endTime} ]
+do
+extractTSLE=`expr ${extractTSGE} + ${interval}`
+
+xtrct_file="elk_log_xtrct_"${extractTSGE}"+${extractTSLE}".log"
+
+curl --user uname:psw -X POST \
+	http://host:5200/index_name*/_search \
+	-H 'Content-Type: application/json' \
+	-H 'kbn-xsrf: true' \
+	-d '{
+	"query":{
+	"bool":{
+	"must":[
+	{
+		"query_string": {
+			"analyze_wildcard": true,
+			"query": "serviceAction : \"name\""
+		}
+	},
+	{
+		"range": {
+			"@timestamp": {
+				"gte": '${extractTSGE}',
+				"lte": '${extractTSLE}',
+				"format":"epoch_millis"
+			}
+		}
+	}
+	],
+	"must_not":[]
+}
+},
+"size":10000,
+"sort":[
+{
+	"@timestamp":{
+	"order":"desc",
+	"unmapped_type":"boolean"
+	}
+}
+],
+"_source":["requestXml","responsXml"],
+"aggs":{
+"2": {
+	"date_histogram": {
+	"field" : "@timestamp",
+	"interval":"30s",
+	"time_zone":"America/New_York",
+	"min_doc_count": 1
+     }
+	}
+},
+"stored_field": [
+"*"
+],
+"script_fields":{},
+"docvalue_fields":[
+	"tranTimestamp",
+	"@timestamp"
+]
+}' > ${xtrct_file}
+
+smryREC=`cut -d "[" -f 1 ${xtrct_file}`
+
+echo $xtrct_file "|" $extractTSGE "|" $extractTSLE "|" $smryREC >> $Extract_summary_fl
+
+echo "converting single line to multilines"
+
+cat $xtrct_file | sed 's/\\"/"/g' | sed 's/\"},\"/\"\\n},\"\g' | sed 's/\",\"requestXml\"/\",\\n\"requestXml\"/g' | sed 's{\"responsXml\"/\{\\n\"responsXml\"/g' | sed 's/\\n/\n/g' | sed 's/^ *//g' > xtrct_file"_fmt"
+
+echo "Merge Request XML rows into single row"
+
+cat $xtrct_file"_fmt" | awk 'BEGIN{reqStrt =0;mergeFlag=0; mergeRec="" }{
+if ($0 ~ "^\"requestXml") {reqStrt=1;mergeFlag=1;}
+if ($0 ~ "}" && reqStrt == 1) {reqStrt=0 ; print mergeRec; mergeFlag=0; mergeRec=""; print $0;}
+if (mergeFlag ==1) {  mergeRec = mergeRec "" $0;} else print $0;
+}' > $xtrct_file"_final"
+
+extractTSGE=`expr ${extractTSGE} + ${interval}`
+done
+
+
+
+	
+
