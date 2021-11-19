@@ -1,0 +1,78 @@
+#!/bin/bash
+function sendCFI(): {
+	export CFROOT=/opt/cyberfusion
+	runDate=`date +%m%d%y)`
+	file1=$1
+	#sending file through MFT
+	/opt/cyberfusion/cfsend lf:/data/$file1 rf:"/remotelocation/data/$file1" n: pn:remoteserver co:cr sm:y
+	cfiStatus=$?
+	return $cfiStatus
+}
+
+emailIDs="xx@yyy.com,"xxxx@yyy.com"
+
+#import config
+. /config/.properties
+
+fileDR=
+outDR=
+ArchiveDR=
+LogDR=
+
+#using perl extract today and yesterday date 
+yDay=`perl -e 'use POSIX qw(strftime); print strftime "%m-%d0%Y" ,localtime(time() - 86400)' `
+tDay=`perl -e 'use POSIX qw(strftime); print strftime "%m-%d0%Y" ,localtime(time())' `
+
+#extracting password
+psw=`perl -MMIME::Base64 -e 'print decode_base64('$psw')'`
+
+sqlResult=`sqlplus -S $user/$psw@host <<EOF
+set feedback off
+set linesize 32767
+set long 32767
+set longchunksize 32767
+set heading off
+set verify off
+set pagesize 0
+set TRIMESPOOL ON
+spool /data/sqldata.tmp
+SELECT
+	col1 ||'|'||  --COLNAME
+	col2 || '|' || --COLNAME2
+	FROM DB.TBL
+	WHERE date_col >= CAST(CAST(TRUNC(SYSDATE -1) AS TIMESTAMP) AT TIME ZONE 'GMT' AS TIMESTAMP)
+          and date_col < 	CAST(CAST(TRUNC(SYSDATE) AS TIMESTAMP) AT TIME ZONE 'GMT' AS TIMESTAMP);
+
+spool off;
+
+EOF
+
+`
+
+#SQL EXECUTION CHECK
+sqlERROR=`cat /data/sqldata.tmp | egrep "ORA-|SP2-"`
+if [$? -eq 0]
+then 
+   echo "Oracle Error Occured"
+   echo "$sqlResult"
+   echo "oramesg="!Alert ${0##*/} SQL Failed"
+   exit 1;
+fi
+
+#Remove blank lines from data file
+cat /data/sqldata.tmp | grep -v "^$" > /data/$file1
+rm /data/sqldata.tmp
+
+Count=`cat $/data/$file1 | wc -l | tr -d" "`
+
+send ${/data/$file1} > $log.txt
+if [$? -eq 0]
+then 
+   echo "Error in MFT Sending"
+   echo "cfsendmesg="!Alert ${0##*/} Failed"
+   cat log.txt | mailx -s {cfsendmesg="!Alert ${0##*/} }" $emailIDs
+   exit 1;
+else
+	echo "sent"
+	
+gzip $data/$file1.txt
