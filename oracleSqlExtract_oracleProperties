@@ -1,0 +1,47 @@
+ORACLE_BASE=/apps/oracle;
+export ORACLE_BASE
+ORACLE_HOME=/apps/oracle/product;
+export ORACLE_HOME
+TNS_ADMIN=/tools/oracle/newtwork/admin;
+export TNS_ADMIN
+NLS_DATE_FORMAT='YYYY-MM-DD:HH24:MI:SS'
+
+PATH=.;
+PATH=${PATH}:/usr/bin;
+PATH=${PATH}:/usr/css/bin;
+PATH=${PATH}:/usr/lib;
+PATH=${PATH}:/usr/sbin;
+PATH=${PATH}:/usr/local/bin;
+PATH=${PATH}:${ORACLE_HOME}/bin;
+PATH=${PATH}:${AGENT_HOME}/bin;
+PATH=${PATH}:${OMS_HOME}/bin;
+PATH=${PATH}:${OMS_HOME}/opmn/bin;
+PATH=${PATH}:${ORACLE_HOME}/dcm/bin:$ORACLE_HOME/opmn/bin;
+PATH=${PATH}:${ORACLE_HOME}/Apache/Apache/bin;
+PATH=${PATH}:/opt/ssh/bin;
+PATH=${PATH}:/usr/X/bin;
+PATH=${PATH}:/usr/dt/bin;
+PATH=${PATH}:/usr/openwin/bin;
+PATH=${PATH}:/opt/sfw/bin;
+PATH=${PATH}:/opt/splex6/prodir/bin;
+ORA_CLASSPATH=${ORACLE_HOME}/jdk/jre;
+ORA_CLASSPATH=${ORA_CLASSPATH}:${ORACLE_HOME}/jlib;
+export ORA_CLASSPATH
+export ORA_CLASSPATH=/app/oracle/product/12201/jdk/jre:/app/oracle/product/12201/jlib
+
+export PATH
+export ORACLE_BASE
+export ORACLE_HOME
+export TNS_ADMIN
+
+LD_LIBRARY_PATH=/usr/lib;
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${ORACLE_HOME}/lib;
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/X/lib;
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/dt/lib;
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/openwin/bin;
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/css/bin
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/share/lib;
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/xpg4/lib;
+export LD_LIBRARY_PATH;
+
+psw
