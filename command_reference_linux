@@ -148,5 +148,19 @@ date -d "$cur_date" "+%s"  #1117425600
 date -d @1117425600        #Mon May 30 00:00:00 EDT 2005
 
 
+#PROXY CONFIG
+$export http_proxy=http://host
+$export https_proxy=http://host
+$export NO_PROXY=host
+
+#SETTING PYENV 
+$export PATH="/app/miniconda/bin:$PATH"
+$source activate pyenv_37
+
+#Running Python Script from Jupyter notebook to load any context or custom variables to use
+%run C:\\2022\code.py           --Jupyter Config
+
+
+
   
   
