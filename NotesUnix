@@ -1,0 +1,31 @@
+#get disk name 
+for disk in df - Ph | sed s/%//g | grep -vE '^Filesystem|tmpfs|cdrom' | awk -F" " '{print $1}' | cut -d/ -f3
+do
+space_used= df | grep $disk | awk -F " " '{print $5}' | cut -d% -f1
+if [ "$space_used" -gt 100 ];then
+mount_point= df -Ph | grep $disk | awk -F" " '{print $6}'
+topdirs= du -sh /u/users/* | grep G | sort -nr
+fi
+done
+find /tmp/log-file -mtime +15 -exec rm {} \;
+
+
+#install mailx on server
+if which mailx > /dev/null;then
+echo "mailx exist"
+elif (( $cat /etc/*-release | grep "CentOS" | wc -l) > 0));then
+sudo yum install mailx -y > /dev/null
+else
+apt install mailutils -y > /dev/null
+fi
+
+
+usage() { echo -e "Usage : script [-e | --EMAIL] [-m | --memory] -v | --verbose " 1>&2;exit 101;
+}
+
+help()
+{
+usage
+echo -e "MANDATORY:"
+echo -e 
+}
