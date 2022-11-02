@@ -29,3 +29,19 @@ usage
 echo -e "MANDATORY:"
 echo -e 
 }
+
+
+###########################################
+Working on Permission , finding permission till root with reverse engineering
+#!/bin/bash
+ARG=/tmp/data/hdfs/prod/test.txt
+while [[ "$ARG" != "." && "$ARG" != "/" ]]
+do
+  ls -ld -- "$ARG"
+  ARG=`dirname -- "$ARG"
+done
+
+(or)
+
+simple use namei -l $ARG
+##############################################
